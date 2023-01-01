@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Games{% endblock %}
+{% block main %}
+<main class="home_main">
+    <h2 class="home_title">Booogle Games</h2>
+    <div class="home_apps">
+        <a href="/games/play/parkour"><img draggable="false" src="static/game_icons/parkour.png"><span>Game</span><strong>Parkour</strong></a>
+        <a href="/games/play/quests"><img draggable="false" src="static/game_icons/quest.png"><span>Game</span><strong>Quests</strong></a>
+        <a href="/games/play/maze"><img draggable="false" src="static/game_icons/maze.png"><span>Game</span><strong>The Maze</strong></a>
+    </div>
+        <h2 class="home_title">Your Games</h2>
+        <div class="home_apps">
+            <a class="add_app"><span><ion-icon name="add-outline"></ion-icon></span></a>
+        <a><img draggable="false" src="static/game_icons/maze.png"><span>Game</span><strong>The Maze</strong></a>
+        </div>
+</main>
+{% endblock %}

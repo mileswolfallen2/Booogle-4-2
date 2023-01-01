@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}New App{% endblock %}
+{% block main %}
+<main class="home_main">
+    <h2 class="home_title">New App</h2>
+    <form method="post" id="form">
+        <div class="error" id="error">Something Went Wrong</div>
+        <input required name="title" maxlength="70" placeholder="Title" autofocus autocapitalize="true" id="title" class="new_app">
+        <textarea required name="desc" data-enable-grammarly="false" data-gramm_editor="false" data-gramm="false" maxlength="200"  placeholder="Description" autocapitalize="true" id="desc" style="height:150px;" class="new_app"></textarea>
+        <input required type="url" name="url" maxlength="100" placeholder="Website Url" id="url" autocapitalize="true" class="new_app">
+        <input required type="url" id="img_id" name="img_url" maxlength="200"  placeholder="Background Url" class="new_app">
+        <input required name="tag" maxlength="30" placeholder="Tag" class="new_app">
+        <button class="g-recaptcha submit_app" data-sitekey="6Lfr-qYjAAAAANilJjQPCNci2UeHCZ9gVGZWrgo3" data-theme="dark" data-callback="onsubmit" data-action="submit" >Submit For Review</button>
+    </form>
+    <p class="new_app_about">Below Is a Manifest That Has To Be Added To Your Website With The File Name ‘manifest.json’</p>
+    <pre class="manifest"><code id="code" class="language-json">
+    </code><button class="copy" onclick="copy()"><ion-icon name="clipboard-outline"></ion-icon></button></pre>
+    <script src="/static/code_theme/prism.js"></script>
+    <script>
+        var error = {{error|tojson}};
+        if(error != false){
+            var error_el = document.getElementById("error")
+            error_el.style.display = "block"
+            error_el.innerHTML = error
+        }
+
+        theme()
+        function onsubmit(token) {
+            document.getElementById("form").submit()
+        }
+        function update() {
+            var code = document.getElementById("code")
+            var title = document.getElementById("title")
+            var desc = document.getElementById("desc")
+            var url = document.getElementById("url")
+            var current = `{"name":"${title.value}", "desc":"${desc.value}", "url":"${url.value}"}`
+            if (code.innerText != current){
+                code.innerText = `{"name":"${title.value}", "desc":"${desc.value}", "url":"${url.value}"}`
+                theme()
+            }
+        }
+        function copy() {
+            navigator.clipboard.writeText(document.getElementById("code").innerText)
+        }
+        setInterval(update,1000)
+    </script>
+</main>
+{% endblock %}

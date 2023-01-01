@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}App Store{% endblock %}
+{% block main %}
+<main class="home_main">
+    <h2 class="home_title">Review Apps</h2>
+    <div class="home_apps" id="apps">
+    </div>
+</main>
+<script>
+    var name = {{name|tojson}};
+    var apps = {{apps|tojson}};
+    var apps_here = document.getElementById("apps")
+    var names =  ids = Object.keys(apps)
+    for (var i=0;i<names.length;i++){
+        var a = document.createElement("a")
+        var img = document.createElement("img")
+        var tag = document.createElement("span")
+        var title = document.createElement("strong")
+        a.href = "/review/"+apps[names[i]]["title"]
+        img.draggable = "false"
+        img.src = apps[names[i]]["img"]
+        tag.innerText = apps[names[i]]["tag"]
+        title.innerText = apps[names[i]]["title"]
+        apps_here.appendChild(a)
+        a.appendChild(img)
+        a.appendChild(tag)
+        a.appendChild(title)
+        var remove = document.createElement("a")
+        remove.classList.add("download")
+        remove.innerHTML = "<ion-icon name='trash-outline'></ion-icon>"
+        remove.href = "/review/remove/"+apps[names[i]]["title"]
+        remove.style.right = "10px"
+        a.appendChild(remove)
+        if(apps[names[i]]["featured"] == true){
+            console.log("hi")
+            var feat = document.createElement("span")
+            feat.classList.add("feat")
+            feat.innerText = "Featured"
+            a.appendChild(feat)
+        }
+    }
+</script>
+{% endblock %}

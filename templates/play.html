@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}{{game}}{% endblock %}
+{% block main %}
+<iframe id="play" class="play_game" src=""></iframe>
+<script>
+    var game = {{game|tojson}}
+    var play = document.getElementById("play")
+    if (game == "Quests"){
+        play.src = "https://the-adventure-game.goodvessel92551.repl.co/"
+    }
+    else if(game == "Parkour"){
+        play.src = "https://parkour-game.goodvessel92551.repl.co/"
+    }else{
+        play.src = "https://the-maze-game.goodvessel92551.repl.co/"
+    }
+</script>
+{% endblock %}

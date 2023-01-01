@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link href="{{url_for('static',filename='code_theme/prism.css')}}" rel="stylesheet" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="{{url_for('static',filename='logo.png')}}" type="image/x-icon">
+    <link rel="stylesheet" href="{{url_for('static',filename='main.css')}}" type="text/css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans&display=swap" rel="stylesheet">
+    <title>Booogle 4</title>
+    <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+    <script src="https://www.google.com/recaptcha/api.js"></script>
+</head>
+<body>
+    <nav class="nav">
+        <a href="/" class="nav_img"><img src="{{url_for('static',filename='logo.png')}}"></a>
+        <a class="nav_title">{% block title %}{% endblock %}</a>
+        <a class="boost" href="/boost"><ion-icon name="rocket-outline"></ion-icon><span id="boost">Boost</span></a>
+        <a class="nav_pro"><img src="{{profile_pic}}" onerror="{{url_for('static',filename='profile_pic.jpg')}}"></a>
+    </nav>
+    <div id="boost_it" class="boostdialog">
+        <strong>Boost</strong>
+        <p onclick="window.open('/boost','__self')">Follow To Boost. Click Here To Find Out More.</p>
+        <ion-icon onclick="document.getElementById('boost_it').style.display='none'" name="close-outline"></ion-icon>
+    </div>
+    {% block main %}
+    {% endblock %}
+    <script>
+        var boost = {{boosting|tojson}};
+        console.log(boost)
+        if(boost == true){
+            document.getElementById("boost").innerText = "Boosting"
+        }
+    </script>
+</body>
+</html>

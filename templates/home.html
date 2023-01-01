@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}Home{% endblock %}
+{% block main %}
+    <main class="home_main">
+        <h2 class="home_title">Booogle Apps</h2>
+        <div class="home_apps">
+            <a href="/calculator"><img draggable="false" src="static/app_icons/maths.png"><span>Maths</span><strong>Calculator</strong></a>
+            <a href="/games"><img draggable="false" src="static/app_icons/games.png"><span>Games</span><strong>Games</strong></a>
+            <a href="/tasks"><img draggable="false" src="static/app_icons/tasks.png"><span>Useful</span><strong>Tasks</strong></a>
+            <a><img draggable="false" src="static/app_icons/mail.png"><span>Useful</span><strong>Mail</strong></a>
+            <a><img draggable="false" src="static/app_icons/revise.png"><span>School</span><strong>Revise</strong></a>
+            <a><img draggable="false" src="static/app_icons/time.png"><span>Useful</span><strong>Time</strong></a>
+            <a><img draggable="false" src="static/app_icons/dice.png"><span>Useful</span><strong>Dice</strong></a>
+            <a><img draggable="false" src="static/app_icons/images.png"><span>Images</span><strong>Images</strong></a>
+            <a><img draggable="false" src="static/app_icons/translate.png"><span>Language</span><strong>Translate</strong></a>
+            <a><img draggable="false" src="static/app_icons/weather.png"><span>Weather</span><strong>Weather</strong></a>
+            <a><img draggable="false" src="static/app_icons/sport.png"><span>Sport</span><strong>Sport</strong></a>
+        </div>
+        <h2 class="home_title">Your Apps</h2>
+        <div id="your_apps" class="home_apps">
+            <a class="add_app" href="/appstore"><span><ion-icon name="add-outline"></ion-icon></span></a>
+        </div>
+    </main>
+<script>
+    var apps = {{apps|tojson}};
+    var is_new = {{is_new|tojson}};
+    if(is_new == "true"){
+        document.getElementById("boost_it").style.display = "block"
+    }
+    var apps_here = document.getElementById("your_apps")
+    var names =  ids = Object.keys(apps)
+    for (var i=0;i<names.length;i++){
+        var a = document.createElement("a")
+        var remove = document.createElement("a")
+        var img = document.createElement("img")
+        var tag = document.createElement("span")
+        var title = document.createElement("strong")
+        remove.classList.add("download")
+        remove.innerHTML = "<ion-icon name='trash-outline'></ion-icon>"
+        remove.href = "/delete/"+apps[names[i]]["title"]
+        a.href = "/app/"+apps[names[i]]["title"]
+        img.draggable = "false"
+        img.src = apps[names[i]]["img"]
+        tag.innerText = apps[names[i]]["tag"]
+        title.innerText = apps[names[i]]["title"]
+        apps_here.appendChild(a)
+        a.appendChild(img)
+        a.appendChild(tag)
+        a.appendChild(title)
+        a.appendChild(remove)
+    }
+</script>
+{% endblock %}

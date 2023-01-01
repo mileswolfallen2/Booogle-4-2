@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block title %}Tasks{% endblock %}
+{% block main %}
+<main class="home_main">
+    <h2 class="home_title">Your Tasks</h2><button onclick="document.getElementById('new').showModal()" class="new_task">Make A Task</button>
+    <div class="tasks" id="container">
+    </div>
+</main>
+<dialog id="new" class="newtask">
+    <ion-icon class="new_close" onclick="document.getElementById('new').close()" name="close-outline"></ion-icon>
+    <h2>New Task</h2>
+    <p>Make a new task with a title description and a date.</p>
+    <form method="post" action="/tasks/new">
+        <input name="title" required class="new_input" type="text" placeholder="Title">
+        <textarea name="desc" required class="new_input" style="padding-top:8px;height:100px;" placeholder="Description"></textarea>
+        <input name="date" required class="new_input" type="date">
+        <button class="new_submit" type="submit"><ion-icon name="add-outline"></ion-icon>Make Task</button>
+    </form>
+</dialog>
+
+<dialog id="edit" class="newtask">
+    <ion-icon class="new_close" onclick="document.getElementById('edit').close()" name="close-outline"></ion-icon>
+    <h2>Edit Task</h2>
+    <p>Edit the current task.</p>
+    <form method="post" id="edit_form" action="/tasks/edit">
+        <input name="title" id="edit_title" required class="new_input" type="text" placeholder="Title">
+        <textarea name="desc" id="edit_desc" required class="new_input" style="padding-top:8px;height:100px;" placeholder="Description"></textarea>
+        <input name="date" id="edit_date" required class="new_input" type="date">
+        <button class="new_submit" type="submit"><ion-icon name="add-outline"></ion-icon>Edit Task</button>
+    </form>
+</dialog>
+
+<script>
+    var tasks = {{tasks|tojson}}
+    var keys = Object.keys(tasks)
+    var container = document.getElementById("container")
+    for(var i=0;i<keys.length;i++){
+        var a = document.createElement("a")
+        var strong = document.createElement("strong")
+        var p = document.createElement("p")
+        var span = document.createElement("span")
+        var del = document.createElement("a")
+        var edit = document.createElement("a")
+        del.classList.add("tasks_del")
+        del.href = "/tasks/del/"+keys[i]
+        del.innerHTML = '<ion-icon name="trash-outline"></ion-icon>'
+        edit.classList.add("tasks_edit")
+        edit.innerHTML = '<ion-icon id='+keys[i]+' name="pencil-outline"></ion-icon>'
+        edit.id = keys[i]
+        edit.addEventListener("click",(e) => {
+            document.getElementById("edit_form").action = "/tasks/edit/"+e.target.id
+            document.getElementById("edit_title").value = tasks[e.target.id]["title"]
+            document.getElementById("edit_desc").textContent = tasks[e.target.id]["desc"]
+            document.getElementById("edit_date").value = tasks[e.target.id]["date"]
+            document.getElementById('edit').showModal()
+        })
+        strong.innerText = tasks[keys[i]]["title"]
+        p.innerText = tasks[keys[i]]["desc"]
+        span.innerText = tasks[keys[i]]["date"]
+        a.appendChild(strong)
+        a.appendChild(p)
+        a.appendChild(span)
+        a.appendChild(del)
+        a.appendChild(edit)
+        container.appendChild(a)
+    }
+</script>
+{% endblock %}
