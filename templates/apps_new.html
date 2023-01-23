@@ -3,12 +3,13 @@
 {% block main %}
 <main class="home_main">
     <h2 class="home_title">New App</h2>
+    <p style="color:var(--text3);">Use this template to make your app: <a target="_blank" style="color:var(--color)" href="https://replit.com/@GoodVessel92551/Booogle-4-App">Booogle 4 App Template</a></p>
     <form method="post" id="form">
         <div class="error" id="error">Something Went Wrong</div>
         <input required name="title" maxlength="70" placeholder="Title" autofocus autocapitalize="true" id="title" class="new_app">
         <textarea required name="desc" data-enable-grammarly="false" data-gramm_editor="false" data-gramm="false" maxlength="200"  placeholder="Description" autocapitalize="true" id="desc" style="height:150px;" class="new_app"></textarea>
         <input required type="url" name="url" maxlength="100" placeholder="Website Url" id="url" autocapitalize="true" class="new_app">
-        <input required type="url" id="img_id" name="img_url" maxlength="200"  placeholder="Background Url" class="new_app">
+        <input required type="url" id="img_id" name="img_url" maxlength="200"  placeholder="Background Image Url" class="new_app">
         <input required name="tag" maxlength="30" placeholder="Tag" class="new_app">
         <button class="g-recaptcha submit_app" data-sitekey="6Lfr-qYjAAAAANilJjQPCNci2UeHCZ9gVGZWrgo3" data-theme="dark" data-callback="onsubmit" data-action="submit" >Submit For Review</button>
     </form>

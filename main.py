@@ -1,6 +1,6 @@
 from flask import Flask, redirect, render_template, url_for, request
 from replit import web, db
-import requests,random
+import requests,random,sys
 from fun import make_dict,is_following
 from better_profanity import profanity
 app = Flask(__name__)
@@ -28,7 +28,7 @@ def calc():
 @app.route("/games")
 @web.authenticated_template("login.html")
 def games():
-    return render_template("game.html",boosting=is_following(web.auth.name)["isFollowingCurrentUser"],profile_pic=request.headers["X-Replit-User-Profile-Image"],name=web.auth.name)
+    return render_template("game.html",apps=make_dict(user.current["apps"]),boosting=is_following(web.auth.name)["isFollowingCurrentUser"],profile_pic=request.headers["X-Replit-User-Profile-Image"],name=web.auth.name)
 
 @app.route("/games/play/<game>")
 @web.authenticated_template("login.html")
@@ -44,13 +44,20 @@ def tasks():
 @web.authenticated_template("login.html")
 def task_new():
     if request.method == "POST":
-        title  = profanity.censor(request.form["title"])
-        desc  = profanity.censor(request.form["desc"])
-        date  = profanity.censor(request.form["date"])
-        id = random.randint(1,10000000000)
-        while id in user.current["tasks"]:
-            id = random.randint(1,10000000000)
-        user.current["tasks"][id] = {"title":title,"desc":desc,"date":date}
+        follow = is_following(web.auth.name)["isFollowingCurrentUser"]
+        print(sys.getsizeof(user.current["tasks"]))
+        if (follow == True and sys.getsizeof(user.current["tasks"]) < 2000) or (follow == False and sys.getsizeof(user.current["tasks"]) < 1000):
+            title  = profanity.censor(request.form["title"])
+            desc  = profanity.censor(request.form["desc"])
+            date  = profanity.censor(request.form["date"])
+            if len(title) > 80 or len(desc) > 200 or len(date) > 15 or len(title) == 0 or len(desc) == 0:
+                return "Inputs are to long or short"
+            id = random.randint(1,10000000)
+            while id in user.current["tasks"]:
+                id = random.randint(1,10000000000)
+            user.current["tasks"][id] = {"title":title,"desc":desc,"date":date}
+        else:
+            return "You do not have space"
     return redirect("/tasks")
 
 @app.route("/tasks/edit/<id>",methods=["POST","GET"])
@@ -60,6 +67,8 @@ def task_edit(id):
         title  = profanity.censor(request.form["title"])
         desc  = profanity.censor(request.form["desc"])
         date  = profanity.censor(request.form["date"])
+        if len(title) > 80 or len(desc) > 200 or len(date) > 15 or len(title) == 0 or len(desc) == 0:
+            return "Inputs are to long or short"
         user.current["tasks"][id] = {"title":title,"desc":desc,"date":date}
     return redirect("/tasks")
 
@@ -83,10 +92,21 @@ def new_app():
         url = request.form["url"]
         img_url = request.form["img_url"]
         tag = request.form["tag"]
-        if len(title) < 5 or len(desc) < 5 or len(url) < 5 or len(img_url) < 5 or len(tag) < 1:
+        name = 0
+        boosting = is_following(web.auth.name)["isFollowingCurrentUser"]
+        for i in db["apps"]:
+            if db["apps"][i]["user"] == web.auth.name:
+                name += 1
+        for i in db["review"]:
+            if db["review"][i]["user"] == web.auth.name:
+                name += 1
+        if (name >= 2 and boosting == False) or (name >= 4 and boosting == True):
+            return render_template("apps_new.html",error="You reached your maxamem amount of apps.",boosting=is_following(web.auth.name)["isFollowingCurrentUser"],profile_pic=request.headers["X-Replit-User-Profile-Image"],name=web.auth.name)
+        if len(title) < 1 or len(desc) < 1 or len(url) < 1 or len(img_url) < 1 or len(tag) < 1:
             return render_template("apps_new.html",error="You Need More Info",boosting=is_following(web.auth.name)["isFollowingCurrentUser"],profile_pic=request.headers["X-Replit-User-Profile-Image"],name=web.auth.name)
         manifest = requests.get(url+"/manifest.json")
-        if manifest.status_code == 200:
+        img = requests.get(img_url)
+        if manifest.status_code == 200 and img.status_code == 200:
             json = manifest.json()
             if json["name"] == title and json["desc"] == desc:
                 if profanity.contains_profanity(title+" "+desc+" "+url+" "+img_url+" "+tag) == True:
@@ -100,7 +120,7 @@ def new_app():
             else:
                 return render_template("apps_new.html",error="Manifest Incomplete",boosting=is_following(web.auth.name)["isFollowingCurrentUser"],profile_pic=request.headers["X-Replit-User-Profile-Image"],name=web.auth.name)
         else:
-            return render_template("apps_new.html",error="Page Not Found",boosting=is_following(web.auth.name)["isFollowingCurrentUser"],profile_pic=request.headers["X-Replit-User-Profile-Image"],name=web.auth.name)
+            return render_template("apps_new.html",error="Page Not Found Or Image Not Found",boosting=is_following(web.auth.name)["isFollowingCurrentUser"],profile_pic=request.headers["X-Replit-User-Profile-Image"],name=web.auth.name)
     return render_template("apps_new.html",error=False,boosting=is_following(web.auth.name)["isFollowingCurrentUser"],profile_pic=request.headers["X-Replit-User-Profile-Image"],name=web.auth.name)
 
 @app.route("/review")
@@ -125,16 +145,21 @@ def review_remove(name):
 def review_app(name):
     if web.auth.name == "GoodVessel92551":
         url = db["review"][name]["url"]
-        html = requests.get(url+"/index.html")
-        script = requests.get(url+"/script.js")
-        css = requests.get(url+"/style.css")
+        if url[-1] == "/":
+            html = requests.get(url+"index.html")
+            script = requests.get(url+"script.js")
+            css = requests.get(url+"style.css")
+        else:
+            html = requests.get(url+"/index.html")
+            script = requests.get(url+"/script.js")
+            css = requests.get(url+"/style.css")
         if html.status_code != 200 or script.status_code != 200 or css.status_code != 200:
             return "error"
         else:
             html = html.text
             script = script.text
             css = css.text
-            return render_template("review_app.html",html=html,script=script,css=css,name=name)
+            return render_template("review_app.html",html=html,script=script,css=css,name=name,boosting=is_following(web.auth.name)["isFollowingCurrentUser"],profile_pic=request.headers["X-Replit-User-Profile-Image"])
     else:
         return redirect("/")
 
@@ -163,16 +188,16 @@ def upload(name):
 @web.authenticated_template("login.html")
 def run_app(name):
     url = db["apps"][name]["url"]
-    r = requests.get(url)
-    return r.text
+    title = db["apps"][name]["title"]
+    return render_template("veiw_app.html",url=url,title=title,apps=make_dict(db["review"]),boosting=is_following(web.auth.name)["isFollowingCurrentUser"],profile_pic=request.headers["X-Replit-User-Profile-Image"],name=web.auth.name)
 
 @app.route("/preview/<name>")
 @web.authenticated_template("login.html")
 def peview(name):
     if web.auth.name == "GoodVessel92551":
         url = db["review"][name]["url"]
-        r = requests.get(url)
-        return r.text
+        title = db["review"][name]["title"]
+        return render_template("veiw_app.html",url=url,title=title,apps=make_dict(db["review"]),boosting=is_following(web.auth.name)["isFollowingCurrentUser"],profile_pic=request.headers["X-Replit-User-Profile-Image"],name=web.auth.name)
     else:
         return redirect("/")
 
@@ -195,17 +220,29 @@ def delete(name):
     del user.current["apps"][name]
     return redirect("/")
 
-@app.route("/veiw")
-def veiw():
-    return make_dict(db["apps"])
-
-@app.route("/veiw2")
-def veiw2():
-    return make_dict(db["review"])
-
 @app.route("/boost")
 @web.authenticated_template("login")
 def boost():
     return render_template("boost.html",boosting=is_following(web.auth.name)["isFollowingCurrentUser"],profile_pic=request.headers["X-Replit-User-Profile-Image"],name=web.auth.name)
+
+@app.route("/mail")
+@web.authenticated_template("login.html")
+def mail():
+    return render_template("mail.html",boosting=is_following(web.auth.name)["isFollowingCurrentUser"],profile_pic=request.headers["X-Replit-User-Profile-Image"],name=web.auth.name)
+
+@app.route("/revise")
+@web.authenticated_template("login.html")
+def revise():
+    return render_template("revise.html",boosting=is_following(web.auth.name)["isFollowingCurrentUser"],profile_pic=request.headers["X-Replit-User-Profile-Image"],name=web.auth.name)
+
+@app.route("/time")
+@web.authenticated_template("login.html")
+def time():
+    return render_template("time.html",boosting=is_following(web.auth.name)["isFollowingCurrentUser"],profile_pic=request.headers["X-Replit-User-Profile-Image"],name=web.auth.name)
+
+@app.route("/dice")
+@web.authenticated_template("login.html")
+def dice():
+    return render_template("dice.html",boosting=is_following(web.auth.name)["isFollowingCurrentUser"],profile_pic=request.headers["X-Replit-User-Profile-Image"],name=web.auth.name)
 
 app.run(host="0.0.0.0",port=81,debug=True)

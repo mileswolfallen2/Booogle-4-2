@@ -20,6 +20,10 @@
         img.draggable = "false"
         img.src = apps[names[i]]["img"]
         tag.innerText = apps[names[i]]["tag"]
+        img.id = i
+        img.addEventListener("error",(e) => {
+            document.getElementById(e.target.id).src = "static/app_icons/error.png"
+        })
         title.innerText = apps[names[i]]["title"]
         apps_here.appendChild(a)
         a.appendChild(img)

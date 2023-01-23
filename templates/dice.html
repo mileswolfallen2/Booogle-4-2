@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Number Generator{% endblock %}
+{% block main %}
+<div class="dice">
+    <h1>Number Generator</h1>
+    <p>Enter A Number Range And Generator</p>
+    <input type="number" id="min" value="1">
+    <input type="number" id="max" value="10">
+    <div id="num">8</div>
+    <button onclick="ran()">Generator</button>
+</div>
+<script>
+    function gen(num1,num2) {
+        min = Math.ceil(num1);
+        max = Math.floor(num2);
+        number = Math.floor(Math.random() * (max - min + 1) + min);
+        return number;
+    }
+    function ran() {
+        var min = document.getElementById("min").value
+        var max = document.getElementById("max").value
+        var num = gen(min,max)
+        document.getElementById("num").innerText = num
+    }
+
+    ran()
+</script>
+{% endblock %}

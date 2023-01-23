@@ -9,9 +9,34 @@
         <a href="/games/play/maze"><img draggable="false" src="static/game_icons/maze.png"><span>Game</span><strong>The Maze</strong></a>
     </div>
         <h2 class="home_title">Your Games</h2>
-        <div class="home_apps">
-            <a class="add_app"><span><ion-icon name="add-outline"></ion-icon></span></a>
-        <a><img draggable="false" src="static/game_icons/maze.png"><span>Game</span><strong>The Maze</strong></a>
+        <div class="home_apps" id="your_games">
+            <a class="add_app" href="/appstore"><span><ion-icon name="add-outline"></ion-icon></span></a>
         </div>
 </main>
+<script>
+    var apps = {{apps|tojson}};
+    var apps_here = document.getElementById("your_games")
+    var names = Object.keys(apps)
+    for (var i=0;i<names.length;i++){
+        if(apps[names[i]]["tag"].toLowerCase() == "game"){
+        var a = document.createElement("a")
+        var remove = document.createElement("a")
+        var img = document.createElement("img")
+        var tag = document.createElement("span")
+        var title = document.createElement("strong")
+        remove.classList.add("download")
+        remove.innerHTML = "<ion-icon name='trash-outline'></ion-icon>"
+        remove.href = "/delete/"+apps[names[i]]["title"]
+        a.href = "/app/"+apps[names[i]]["title"]
+        img.draggable = "false"
+        img.src = apps[names[i]]["img"]
+        tag.innerText = apps[names[i]]["tag"]
+        title.innerText = apps[names[i]]["title"]
+        apps_here.appendChild(a)
+        a.appendChild(img)
+        a.appendChild(tag)
+        a.appendChild(title)
+        a.appendChild(remove)}
+    }
+</script>
 {% endblock %}

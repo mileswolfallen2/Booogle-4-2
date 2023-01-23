@@ -2,7 +2,7 @@
 {% block title %}App Store{% endblock %}
 {% block main %}
 <main class="home_main">
-    <h2 class="home_title">Apps</h2>
+    <h2 class="home_title">Apps</h2><button onclick="window.open('/appstore/new','_self')" class="new_task">Make An App</button>
     <div class="home_apps" id="apps">
     </div>
 </main>
@@ -23,6 +23,10 @@
         a.href = "/app/"+apps[names[i]]["title"]
         img.draggable = "false"
         img.src = apps[names[i]]["img"]
+        img.id = apps[names[i]]["title"]
+        img.addEventListener("error",(e) => {
+            document.getElementById(e.target.id).src = "static/app_icons/error.png"
+        })
         tag.innerText = apps[names[i]]["tag"]
         title.innerText = apps[names[i]]["title"]
         apps_here.appendChild(a)
